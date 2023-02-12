@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    *{
+        box-sizing: border-box;
+    }
+    body{
+        height: 200vh;
+    }
+    .table{
+        width: 80%;
+    }
+    .table th,td{
+        padding: 40px 50px;
+    }
+    .buttons{
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        padding:0% 43%;
+    }
+</style>
+<body>
+    
+    <div style="display: flex;width: 100%; justify-content: center;padding: 50px 10px;">
+        <table class="table" border="1px solid black" style="border-spacing:0px;">
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Action</th>
+                    <th>count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Time</td>
+                    <td id="currTime"></td>
+                </tr>
+                <tr>
+                    <td>Time Spent</td>
+                    <td id="time-c"></td>
+                </tr>
+                <tr>
+                    <td>Button</td>
+                    <td id="button-c"></td>
+                </tr>
+                <tr>
+                    <td>Clicks</td>
+                    <td id="click-c"></td>
+                </tr>
+                <tr>
+                    <td>Scroll</td>
+                    <td id="scroll-c"></td>
+                </tr>
+                <tr>
+                    <td>Links</td>
+                    <td id="link-c"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="buttons">
+        <button type="button">Button</button>
+        <button type="submit">Submit</button>
+        <button type="reset">Reset</button>
+    </div>
+    <div class="Links">
+        <a href="">Link</a>
+        <a href="" target="_blank" rel="noopener noreferrer">Blank</a>
+    </div>
+</body>
+<script src="index.js"></script>
+</html>
