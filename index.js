@@ -16,6 +16,9 @@
 
   // Your code here...
   // alert("Starting");
+  var html2canvasScript=document.createElement('script')
+  html2canvasScript.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"
+  document.head.append(html2canvasScript);
   var allButtons = document.querySelectorAll("button");
   var allLinks = document.querySelectorAll("a");
   const isRunning = () => {
