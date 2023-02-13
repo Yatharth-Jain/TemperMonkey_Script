@@ -6,19 +6,19 @@
 // @author       You
 // @match        https://*/*
 // @match        http://*/*
-// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
 // @noframes
 // ==/UserScript==
 
+import html2canvas from "./html2canvas";
 (function () {
   "use strict";
 
   // Your code here...
   // alert("Starting");
-  var html2canvasScript=document.createElement('script')
-  html2canvasScript.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"
-  document.head.append(html2canvasScript);
+  // var html2canvasScript=document.createElement('script')
+  // html2canvasScript.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"
+  // document.head.append(html2canvasScript);
   var allButtons = document.querySelectorAll("button");
   var allLinks = document.querySelectorAll("a");
   const isRunning = () => {
@@ -114,7 +114,7 @@
     annotation.style.transform = "translate(-100%, -100%)";
     annotation.style.top = y + "px";
     annotation.style.left = x + "px";
-    console.log(annotation);
+    // console.log(annotation);
     document.body.appendChild(annotation);
 
     var data = JSON.parse(localStorage.getItem("data"));
