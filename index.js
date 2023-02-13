@@ -11,146 +11,183 @@
 // @noframes
 // ==/UserScript==
 
-(function() {
-    'use strict';
+(function () {
+  "use strict";
 
-    // Your code here...
-    // alert("Starting");
-    var allButtons=document.querySelectorAll("button")
-    var allLinks=document.querySelectorAll("a")
-    var window=document
+  // Your code here...
+  // alert("Starting");
+  var allButtons = document.querySelectorAll("button");
+  var allLinks = document.querySelectorAll("a");
+  const isRunning = () => {
+    if (localStorage.getItem("running") == "true") return true;
+    else false;
+  };
+  var ctime = 0;
+  const timer = () => {
+    setTimeout(() => {
+      ctime = ctime + 1000;
+      timer();
+    }, 1000);
+  };
+  timer();
 
+  // Making Monitoring Button
+  var monitorbtn = document.createElement("div");
+  monitorbtn.style.width = "50px";
+  monitorbtn.style.height = "50px";
+  monitorbtn.style.borderRadius = "50%";
+  monitorbtn.style.position = "fixed";
+  monitorbtn.style.backgroundColor = isRunning() ? "red" : "greenyellow";
+  monitorbtn.style.zIndex = 1000000;
+  monitorbtn.style.bottom = "20px";
+  monitorbtn.style.right = "20px";
+  document.body.appendChild(monitorbtn);
 
-    var clicks=[]
-    var scrolls=[]
-    var buttonClicks={}
-    var linkClicks=[]
+  // Adding Event Listner to The Monitoring Button
+  monitorbtn.addEventListener("click", (ev) => {
+    if (isRunning()) {
+      console.log(JSON.parse(localStorage.getItem("data")));
+      localStorage.setItem("running", "false");
 
-    const tabTime = Date.now();
+      // ######### FOR SENDING DATA TO API #############
 
-    var ctime=0;
-    const timer=()=>{
-        setTimeout(()=>{
-            ctime=ctime+1000;
-            timer();
-        },1000)
+      // fetch('HereGoesTheApiLink', {
+      //     method: 'POST',
+      //     headers: {
+      //         'Accept': 'application/json',
+      //         'Content-Type': 'application/json'
+      //     },
+      //     body: JSON.stringify({data:localStorage.getItem('data')})
+      // })
+      // .then(response => response.json())
+      // .then(response => console.log(JSON.stringify(response)))
+    } else {
+      localStorage.setItem("running", "true");
+      localStorage.setItem("data", JSON.stringify([]));
     }
-    timer()
+    monitorbtn.style.backgroundColor = isRunning() ? "red" : "greenyellow";
 
-    var monitorbtn=document.createElement('div')
+    ev.stopPropagation();
+  });
 
-    monitorbtn.style.width='50px';
-    monitorbtn.style.height='50px';
-    monitorbtn.style.borderRadius='50%';
-    monitorbtn.style.position='fixed';
-    monitorbtn.style.backgroundColor=localStorage.getItem('running')=="true"?'red':'greenyellow';
-    monitorbtn.style.zIndex=1000000;
-    monitorbtn.style.bottom='20px';
-    monitorbtn.style.right='20px';
-
-    document.body.appendChild(monitorbtn)
-
-
-    monitorbtn.addEventListener('click',(ev)=>{
-        if(localStorage.getItem('running')=='true'){
-            console.log(JSON.parse(localStorage.getItem('data')))
-            localStorage.setItem('running','false')
-
-            // ######### FOR SENDING DATA TO API #############
-
-            // fetch('HereGoesTheApiLink', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Accept': 'application/json',
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({data:localStorage.getItem('data')})
-            // })
-            // .then(response => response.json())
-            // .then(response => console.log(JSON.stringify(response)))
-
-        }
-        else{
-            localStorage.setItem('running','true')
-            localStorage.setItem('data',JSON.stringify([]))
-        }
-        monitorbtn.style.backgroundColor=localStorage.getItem('running')=="true"?'red':'greenyellow';
-
-        ev.stopPropagation();
-        
-    })
-
-    const addressClick = (ev) => {
-        // console.log("Click",ev.offsetX,ev.offsetY,ev);
-        var data=JSON.parse(localStorage.getItem('data'))
-        data.push({
-            addr:ev.view.location.href,
-            action:"click",
-            time:Date.now(),
-            x:ev.offsetX,
-            y:ev.offsetY,
-        })
-        localStorage.setItem('data',JSON.stringify(data))
-    };
-    const onscroll=(ev)=>{
-        // console.log("Scroll",ev);        
-        var data=JSON.parse(localStorage.getItem('data'))
-        data.push({
-            addr:ev.target.location.href,
-            action:"scroll",
-            time:Date.now(),
-            timeStamp:ev.timeStamp,            
-        })
-        localStorage.setItem('data',JSON.stringify(data))
-    };
-    const buttonClick=(ev)=>{
-        // console.log(ev.srcElement.type,ev)
-        var data=JSON.parse(localStorage.getItem('data'))
-        data.push({
-            addr:ev.view.location.href,
-            action:"buttonClick",
-            type:ev.srcElement.type,
-            time:Date.now(),
-            timeStamp:ev.timeStamp
-        })
-        localStorage.setItem('data',JSON.stringify(data))
-        ev.stopPropagation();
-
-    }
-
-    const linkClick=(ev)=>{
-        // console.log(ev)
-        var data=JSON.parse(localStorage.getItem('data'))
-        
-        data.push({
-            addr:ev.view.location.href,
-            action:"linkClick",
-            time:Date.now(),
-            href:ev.srcElement.href
-        })
-        localStorage.setItem('data',JSON.stringify(data))
-        ev.stopPropagation();
-
-    }
-
-
-    document.addEventListener("click", (ev) => {
-        addressClick(ev);
+  async function snapImage(x1, y1, x2, y2, e) {
+    // console.log(x1, x2, y1, y2);
+    var image = html2canvas(document.body).then(function (canvas) {
+      // calc the size -- but no larger than the html2canvas size!
+      var width = Math.min(canvas.width, Math.abs(x2 - x1));
+      var height = Math.min(canvas.height, Math.abs(y2 - y1));
+      // create a new avatarCanvas with the specified size
+      var avatarCanvas = document.createElement("canvas");
+      avatarCanvas.width = width;
+      avatarCanvas.height = height;
+      avatarCanvas.id = "avatarCanvas";
+      // put avatarCanvas into document body
+      // document.body.appendChild(avatarCanvas);
+      // use the clipping version of drawImage to draw
+      // a clipped portion of html2canvas's canvas onto avatarCanvas
+      var avatarCtx = avatarCanvas.getContext("2d");
+      avatarCtx.drawImage(canvas, x1, y1, width, height, 0, 0, width, height);
+      // console.log(avatarCanvas.toDataURL())
+      return avatarCanvas.toDataURL();
     });
-    document.addEventListener('scroll',(ev)=>{
-        onscroll(ev);
-        // console.log(ev);
-    })
-    allButtons.forEach(e=>{
-        e.addEventListener('click',(ev)=>{
-            buttonClick(ev);
-        })
-    })
-    allLinks.forEach(e=>{
-        e.addEventListener('click',(ev)=>{
-            linkClick(ev);
-        })
-    })
+    return image;
+  }
 
+  const addressClick = async (ev) => {
+    // console.log("Click",ev.offsetX,ev.offsetY,ev);
+    let x = ev.pageX,
+      y = ev.pageY;
+    var text = prompt("Type the Annotation");
 
+    var annotation = document.createElement("div");
+    annotation.innerHTML = text;
+    annotation.style.backgroundColor = "rgb(248, 90, 90)";
+    annotation.style.minHeight = "100px";
+    annotation.style.minWidth = "100px";
+    annotation.style.maxWidth = "200px";
+    annotation.style.borderRadius = "50% 50% 0% 50%";
+    annotation.style.padding = "35px";
+    annotation.style.position = "absolute";
+    annotation.style.transform = "translate(-100%, -100%)";
+    annotation.style.top = y + "px";
+    annotation.style.left = x + "px";
+    console.log(annotation);
+    document.body.appendChild(annotation);
+
+    var data = JSON.parse(localStorage.getItem("data"));
+    let image = await snapImage(x - 400, y - 300, x + 400, y + 300);
+    annotation.remove();
+
+    data.push({
+      addr: ev.view.location.href,
+      action: "click",
+      time: Date.now(),
+      x,
+      y,
+      snapshot: image,
+    });
+    localStorage.setItem("data", JSON.stringify(data));
+  };
+
+  const onscroll = (ev) => {
+    // console.log("Scroll",ev);
+    var data = JSON.parse(localStorage.getItem("data"));
+    data.push({
+      addr: ev.target.location.href,
+      action: "scroll",
+      scrollTop: document.documentElement.scrollTop,
+      time: Date.now(),
+      timeStamp: ev.timeStamp,
+    });
+    localStorage.setItem("data", JSON.stringify(data));
+  };
+
+  const buttonClick = (ev) => {
+    // console.log(ev.srcElement.type,ev)
+    var data = JSON.parse(localStorage.getItem("data"));
+    data.push({
+      addr: ev.view.location.href,
+      action: "buttonClick",
+      type: ev.srcElement.type,
+      time: Date.now(),
+      timeStamp: ev.timeStamp,
+    });
+    localStorage.setItem("data", JSON.stringify(data));
+    ev.stopPropagation();
+  };
+
+  const linkClick = (ev) => {
+    // console.log(ev)
+    var data = JSON.parse(localStorage.getItem("data"));
+
+    data.push({
+      addr: ev.view.location.href,
+      action: "linkClick",
+      time: Date.now(),
+      href: ev.srcElement.href,
+    });
+    localStorage.setItem("data", JSON.stringify(data));
+    ev.stopPropagation();
+  };
+
+  document.addEventListener("click", (ev) => {
+    if (isRunning()) addressClick(ev);
+  });
+
+  document.addEventListener("scroll", (ev) => {
+    onscroll(ev);
+    // console.log(ev);
+  });
+
+  allButtons.forEach((e) => {
+    e.addEventListener("click", (ev) => {
+      buttonClick(ev);
+    });
+  });
+
+  allLinks.forEach((e) => {
+    e.addEventListener("click", (ev) => {
+      linkClick(ev);
+    });
+  });
 })();
